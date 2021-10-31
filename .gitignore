@@ -8,8 +8,34 @@
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+# logs
+logs
+*.log
+*.log*
 *.out
+nohup*
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+# ide settings
+.idea
+.vscode
+
+# mac temp file
+.DS_Store
+# env
+venv
+.venv
+.noxenv
+
+# build
+*.py[cod]
+*.egg-info
+*.egg
+.eggs
+eggs
+build
+dist
+__pycache__
+vendor/
+dpatch*
+deploy*
+go_study
