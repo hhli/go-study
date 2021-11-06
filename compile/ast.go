@@ -1,7 +1,6 @@
-/**
-抽象语法树等编译器相关demo，学习golang标准库如何进行词法、语法分析
-资料参考https://www.jianshu.com/p/937d649039ec
-*/
+// Package compile
+// 抽象语法树等编译器相关demo，学习golang标准库如何进行词法、语法分析
+// 资料参考https://www.jianshu.com/p/937d649039ec
 package compile
 
 import (
@@ -32,7 +31,7 @@ func Scan(sourceCode []byte) {
 	}
 }
 
-// Parse...
+// Parse ...
 func Parse(sourceCode []byte) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "", sourceCode, 0)
@@ -57,7 +56,9 @@ func Inspect(filePath string) {
 		ret, ok := n.(*ast.ReturnStmt)
 		if ok {
 			fmt.Printf("return statement found on line %v:\n", fset.Position(ret.Pos()))
-			printer.Fprint(os.Stdout, fset, ret)
+			// 打印出原始的代码语句
+			_ = printer.Fprint(os.Stdout, fset, ret)
+			// fmt.Println(ret.Results)
 			fmt.Printf("\n")
 			return true
 		}
@@ -67,7 +68,7 @@ func Inspect(filePath string) {
 
 type Visitor int
 
-// Visit0
+// Visit ...
 func (v Visitor) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return nil
