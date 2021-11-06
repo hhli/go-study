@@ -1,5 +1,6 @@
 /**
 抽象语法树等编译器相关demo，学习golang标准库如何进行词法、语法分析
+资料参考https://www.jianshu.com/p/937d649039ec
 */
 package compile
 
@@ -11,6 +12,7 @@ import (
 	"go/scanner"
 	"go/token"
 	"os"
+	"strings"
 )
 
 // Scan 扫描源码文件的字符，生成token
@@ -61,4 +63,27 @@ func Inspect(filePath string) {
 		}
 		return true
 	})
+}
+
+type Visitor int
+
+// Visit0
+func (v Visitor) Visit(n ast.Node) ast.Visitor {
+	if n == nil {
+		return nil
+	}
+	fmt.Printf("%s%T\n", strings.Repeat("\t", int(v)), n)
+	return v + 1
+}
+
+// Walk 通过遍历接口进行处理
+func Walk() {
+	// Create the AST by parsing src.
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "", "package main; var a = 3", parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	var v Visitor
+	ast.Walk(v, f)
 }
