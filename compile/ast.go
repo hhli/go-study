@@ -32,7 +32,7 @@ func Scan(sourceCode []byte) {
 	}
 }
 
-// Parse ...
+// Parse...
 func Parse(sourceCode []byte) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, "", sourceCode, 0)

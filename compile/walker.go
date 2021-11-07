@@ -539,7 +539,7 @@ func (f *FixContext) genSourceCtx(fn *ast.FuncDecl) {
 // DoFind 遍历所有文件，查找目标
 func DoFind(files []string) {
 	for _, file := range files {
-		fset := token.NewFileSet() // positions are relative to fset
+		fset := token.NewFileSet()
 		f, err := parser.ParseFile(fset, file, nil, 0)
 		if err != nil {
 			panic(err)

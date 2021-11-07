@@ -17,7 +17,5 @@ func main() {
 		return
 	}
 
-	log.Printf("file length:%d", len(files))
-
-	//compile.DoFind(files)
+	compile.DoFind(files)
 }
