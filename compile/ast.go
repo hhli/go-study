@@ -1,6 +1,7 @@
 // Package compile
 // 抽象语法树等编译器相关demo，学习golang标准库如何进行词法、语法分析
-// 资料参考https://www.jianshu.com/p/937d649039ec
+// 资料1 https://www.jianshu.com/p/937d649039ec
+// 参考2 https://studygolang.com/articles/6709
 package compile
 
 import (
