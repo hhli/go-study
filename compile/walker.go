@@ -315,7 +315,7 @@ func (f *FixContext) Visit(n ast.Node) (w ast.Visitor) {
 		} else {
 			//如果修改了函数里面的nil为ctx，需要判断本函数的入参列表有没有ctx context.Context
 			log.Printf("函数[%s.%s]内部修复 at line:%v", f.Package, f.LocalFunc.Name, GFset.Position(f.LocalFunc.Pos()))
-			f.FixLocalunc()
+			f.FixLocalFunc()
 		}
 	}
 
@@ -425,9 +425,9 @@ func (f *FixContext) insertCtxInBody(call *ast.CallExpr) bool {
 	return true
 }
 
-// FixLocalunc 关键函数和传递函数如果没有context，需要加在第一个入参，并记录后递归向上查询
+// FixLocalFunc 关键函数和传递函数如果没有context，需要加在第一个入参，并记录后递归向上查询
 // 源头函数如果没有产生ctx，则需要自动生成一个
-func (f *FixContext) FixLocalunc() {
+func (f *FixContext) FixLocalFunc() {
 	fn := f.LocalFunc
 
 	//看看本函数是不是已经有了ctx，如果有就退出
