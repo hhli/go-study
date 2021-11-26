@@ -1,54 +1,60 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-
-	"github.com/hhli/go_study/compile"
+	"math/rand"
+	"time"
 )
+
+var intChan chan int
 
 // main
 func main() {
-	compile.Walk()
+	intChan = make(chan int, 8)
+	go chanInput()
 
-	//files, err := compile.WalkDir("./compile/example", ".go")
-	//
-	//if err != nil {
-	//	log.Printf("遍历目录出现错误:%v", err)
-	//	return
-	//}
-	//
-	//compile.DoFind(files)
-	extend := EventExtend{EventId: "1111", AccessAggregation: BffMidEventCache{BottomPublishTime: ""}}
-	temp, _ := json.Marshal(extend)
-	fmt.Println(string(temp))
+	go func() {
+		chanOutput("test1")
+	}()
+
+	go func() {
+		chanOutput("test2")
+	}()
+
+	// 为什么不加sleep就有问题
+	time.Sleep(time.Second * 1)
 }
 
-// EventExtend 扩展索引
-type EventExtend struct {
-	EventId           string           `json:"event_id"`
-	BottomPublishUser string           `json:"bottom_publish_user,omitempty"` //底层页发布人
-	AccessAggregation BffMidEventCache `json:"access_aggregation"`            //接入层聚合信息，兼容之前的redis cache
+// 写入channel
+func chanInput() {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for {
+		i := r.Intn(100)
+		fmt.Println(i)
+		intChan <- i
+		if i > 88 {
+			break
+		}
+	}
 }
 
-// BffMidEventCache 中事件缓存（接入层使用）
-type BffMidEventCache struct {
-	EventId           string `json:"event_id"`
-	Event             string `json:"event"`
-	CmsId             string `json:"cms_id"`
-	HeadImage         string `json:"head_image"`
-	EmojiTag          int32  `json:"emoji_tag"`
-	EmojiTagName      string `json:"emoji_tag_name"`
-	Image             string `json:"image"`
-	TopArticleTitle   string `json:"top_article_title"` // 焦点文章标题
-	TopArticleType    string `json:"top_article_type"`  // 焦点文章类型
-	Heat              int32  `json:"heat"`
-	CateName          string `json:"cate_name"`
-	SubCateName       string `json:"sub_cate_name"`
-	EventSource       int32  `json:"event_source"`
-	CoverPicture      string `json:"cover_picture"`
-	PictureLittle     string `json:"picture_little"`
-	BriefPic          string `json:"brief_pic"`
-	BriefTitle        string `json:"brief_title"`
-	BottomPublishTime string `json:"bottom_publish_time,omitempty"`
+// 读取channel
+func chanOutput(goro string) {
+	for i := range intChan {
+		fmt.Println(fmt.Sprintf("%s:%d", goro, i))
+	}
+}
+
+// ArticleDetail 文章详情
+type ArticleDetail struct {
+	ID         string `json:"id"`         //文章cmsID
+	EntityType string `json:"entityType"` //文章类型 article图文/video视频/live_streaming直播
+	TitleOuter string `json:"titleOuter"` //外显标题
+	Tag        string `json:"tag"`        //标签
+	IsLock     string `json:"isLock"`     //是否锁定
+	IsDelete   string `json:"isDelete"`   //是否展示 是否删除
+}
+
+type BottomConcernResult struct {
+	ArticleList []*ArticleDetail //人工干预的所有文章列表
 }
