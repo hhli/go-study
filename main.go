@@ -1,60 +1,42 @@
 package main
 
-import (
-	"fmt"
-	"math/rand"
-	"time"
-)
-
-var intChan chan int
+import "fmt"
 
 // main
 func main() {
-	intChan = make(chan int, 8)
-	go chanInput()
+	//  ==有问题结束
+	var source []string
+	s1 := "1"
+	s2 := "2"
 
-	go func() {
-		chanOutput("test1")
-	}()
+	source = append(source, s1)
+	source = append(source, s2)
+	var dest []*string
 
-	go func() {
-		chanOutput("test2")
-	}()
-
-	// 为什么不加sleep就有问题
-	time.Sleep(time.Second * 1)
-}
-
-// 写入channel
-func chanInput() {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	for {
-		i := r.Intn(100)
-		fmt.Println(i)
-		intChan <- i
-		if i > 88 {
-			break
-		}
+	for _, s3 := range source {
+		dest = append(dest, &s3)
 	}
-}
 
-// 读取channel
-func chanOutput(goro string) {
-	for i := range intChan {
-		fmt.Println(fmt.Sprintf("%s:%d", goro, i))
+	for _, s := range dest {
+		fmt.Println(*s)
 	}
-}
+	//  ==有问题结束
 
-// ArticleDetail 文章详情
-type ArticleDetail struct {
-	ID         string `json:"id"`         //文章cmsID
-	EntityType string `json:"entityType"` //文章类型 article图文/video视频/live_streaming直播
-	TitleOuter string `json:"titleOuter"` //外显标题
-	Tag        string `json:"tag"`        //标签
-	IsLock     string `json:"isLock"`     //是否锁定
-	IsDelete   string `json:"isDelete"`   //是否展示 是否删除
-}
-
-type BottomConcernResult struct {
-	ArticleList []*ArticleDetail //人工干预的所有文章列表
+	// ==没有问题开始
+	//var source []*string
+	//s1 := "1"
+	//s2 := "2"
+	//
+	//source = append(source, &s1)
+	//source = append(source, &s2)
+	//var dest []*string
+	//
+	//for _, s3 := range source {
+	//	dest = append(dest, s3)
+	//}
+	//
+	//for _, s := range dest {
+	//	fmt.Println(*s)
+	//}
+	// ==没有问题结束
 }
