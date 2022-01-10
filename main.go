@@ -4,39 +4,19 @@ import "fmt"
 
 // main
 func main() {
-	//  ==有问题结束
-	var source []string
-	s1 := "1"
-	s2 := "2"
-
-	source = append(source, s1)
-	source = append(source, s2)
-	var dest []*string
-
-	for _, s3 := range source {
-		dest = append(dest, &s3)
+	pojo := Pojo{}
+	fmt.Println(pojo.id2String)
+	var i interface{}
+	i = 0
+	temp, ok := i.(string)
+	if ok {
+		println(temp)
+	} else {
+		println("fail")
 	}
 
-	for _, s := range dest {
-		fmt.Println(*s)
-	}
-	//  ==有问题结束
+}
 
-	// ==没有问题开始
-	//var source []*string
-	//s1 := "1"
-	//s2 := "2"
-	//
-	//source = append(source, &s1)
-	//source = append(source, &s2)
-	//var dest []*string
-	//
-	//for _, s3 := range source {
-	//	dest = append(dest, s3)
-	//}
-	//
-	//for _, s := range dest {
-	//	fmt.Println(*s)
-	//}
-	// ==没有问题结束
+type Pojo struct {
+	id2String map[string]string
 }
