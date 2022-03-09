@@ -3,16 +3,18 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/xuri/excelize/v2"
 	"io/ioutil"
+	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/xuri/excelize/v2"
 )
 
 // main
 func main() {
-	makeConfig()
+	re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
+	src := re.ReplaceAllString("<b>美国总统拜登将于上午10:45（北京时间23:45）就俄罗斯问题发表讲话。</b>", "")
+	fmt.Println(src)
 }
 
 func makeConfig() {
