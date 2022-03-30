@@ -5,16 +5,53 @@ import (
 	"fmt"
 	"github.com/xuri/excelize/v2"
 	"io/ioutil"
-	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 // main
 func main() {
-	re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
-	src := re.ReplaceAllString("<b>美国总统拜登将于上午10:45（北京时间23:45）就俄罗斯问题发表讲话。</b>", "")
-	fmt.Println(src)
+	makeConfig()
+
+	temp := []int{5, 7, 9, 1}
+	sort.SliceStable(temp, func(i, j int) bool {
+		return temp[i] > temp[j]
+	})
+
+	fmt.Println(temp[0])
+}
+
+func makeConfig2() {
+	f, err := excelize.OpenFile("/Users/lihuihui/Desktop/疫情来源.xlsx")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Get all the rows in the Sheet1.
+	rows, err := f.GetRows("Sheet1")
+	fmt.Printf("rows len:%d\n", len(rows))
+
+	areaConfig := make(map[string]Area, len(rows))
+	for _, row := range rows {
+		fullProv := row[0]
+		prov := row[1]
+		name := row[2]
+		areaConfig[name] = Area{Prov: prov, FullProv: fullProv}
+	}
+
+	bytes, _ := json.Marshal(areaConfig)
+	err = ioutil.WriteFile("test.txt", bytes, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+// Area 区域信息
+type Area struct {
+	Prov     string `json:"prov,omitempty"`      // 省份信息 比如河北 西藏 澳门
+	FullProv string `json:"full_prov,omitempty"` // 省份完整信息 比如河北省 西藏自治区 澳门特别行政区
 }
 
 func makeConfig() {
@@ -25,7 +62,7 @@ func makeConfig() {
 	}
 
 	// Get all the rows in the Sheet1.
-	rows, err := f.GetRows("工作表2")
+	rows, err := f.GetRows("系数-格式化")
 	fmt.Printf("rows len:%d\n", len(rows))
 
 	clueConfig := make(map[string]ClueAggregation, len(rows))
@@ -36,6 +73,7 @@ func makeConfig() {
 		}
 		if len(row) == 6 {
 			mid := row[0]
+			mid = strings.TrimSuffix(mid, ".0")
 			monitorType := row[1]
 			name := row[2]
 			myType := row[3]
