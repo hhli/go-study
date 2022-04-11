@@ -1,25 +1,61 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/xuri/excelize/v2"
 	"io/ioutil"
-	"sort"
+	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // main
 func main() {
-	makeConfig()
+	makePutBulk()
+}
 
-	temp := []int{5, 7, 9, 1}
-	sort.SliceStable(temp, func(i, j int) bool {
-		return temp[i] > temp[j]
-	})
+func makePutBulk() {
+	f, err := excelize.OpenFile("/Users/lihuihui/Downloads/工厂来源.xlsx")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	fmt.Println(temp[0])
+	// Get all the rows in the Sheet1.
+	rows, err := f.GetRows("系数-格式化")
+	fmt.Printf("rows len:%d\n", len(rows))
+
+	file, err := os.OpenFile("test.txt", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("文件打开失败", err)
+	}
+	//及时关闭file句柄
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			fmt.Printf("close file err:%v\n", err)
+		}
+	}()
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+
+	for _, row := range rows {
+		mid := row[0]
+		name := row[2]
+		url := row[4]
+		now := time.Now().Format("2006-01-02 15:04:05")
+		s1 := fmt.Sprintf("{\"index\":{\"_id\":\"weixin-%s\"}}\n", mid)
+		_, _ = write.WriteString(s1)
+
+		str := fmt.Sprintf("{\"mid\":\"%s\",\"created_at\":\"%s\",\"monitor_type\":\"account\",\"id\":\"weixin-%s\",\"status\":1,\"grab_type\":2,\"updated_at\":\"%s\",\"name\":\"%s\",\"source\":\"weixin\", \"url\":\"%s\"}\n", mid, now, mid, now, name, url)
+		_, _ = write.WriteString(str)
+	}
+
+	// Flush将缓存的文件真正写入到文件中
+	_ = write.Flush()
 }
 
 func makeConfig2() {
@@ -89,8 +125,13 @@ func makeConfig() {
 				clue.ClueType = []string{"finance_comprehensive", "finance_ministries"}
 			}
 			// 如果浮点数转化失败，f=0
-			f, _ := strconv.ParseFloat(weight, 64)
-			clue.FinanceSourceCoefficient = f
+			f1, _ := strconv.ParseFloat(weight, 64)
+			clue.FinanceSourceCoefficient = f1
+			_, ok := clueConfig[sourceKey]
+			if ok {
+				fmt.Println(sourceKey)
+			}
+
 			clueConfig[sourceKey] = clue
 		} else {
 			fmt.Printf("row mid:%s\n", strings.Join(row, ","))
