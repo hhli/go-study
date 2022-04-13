@@ -18,14 +18,14 @@ func main() {
 }
 
 func makePutBulk() {
-	f, err := excelize.OpenFile("/Users/lihuihui/Downloads/工厂来源.xlsx")
+	f, err := excelize.OpenFile("/Users/lihuihui/Downloads/weixin.xlsx")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// Get all the rows in the Sheet1.
-	rows, err := f.GetRows("系数-格式化")
+	rows, err := f.GetRows("Sheet1")
 	fmt.Printf("rows len:%d\n", len(rows))
 
 	file, err := os.OpenFile("test.txt", os.O_WRONLY|os.O_CREATE, 0666)
@@ -44,8 +44,8 @@ func makePutBulk() {
 
 	for _, row := range rows {
 		mid := row[0]
-		name := row[2]
-		url := row[4]
+		name := row[1]
+		url := row[2]
 		now := time.Now().Format("2006-01-02 15:04:05")
 		s1 := fmt.Sprintf("{\"index\":{\"_id\":\"weixin-%s\"}}\n", mid)
 		_, _ = write.WriteString(s1)
