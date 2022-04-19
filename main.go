@@ -15,10 +15,11 @@ import (
 // main
 func main() {
 	makePutBulk()
+
 }
 
 func makePutBulk() {
-	f, err := excelize.OpenFile("/Users/lihuihui/Downloads/weixin.xlsx")
+	f, err := excelize.OpenFile("/Users/lihuihui/Downloads/weixin2.xlsx")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -107,35 +108,39 @@ func makeConfig() {
 			// 忽略表头
 			continue
 		}
-		if len(row) == 6 {
-			mid := row[0]
-			mid = strings.TrimSuffix(mid, ".0")
-			monitorType := row[1]
-			name := row[2]
-			myType := row[3]
-			weight := row[4]
-			source := row[5]
-			sourceKey := fmt.Sprintf("%s:%s:%s", monitorType, source, mid)
-			clue := ClueAggregation{Name: name}
-			if myType == "" {
-				clue.ClueType = []string{"finance_comprehensive"}
-			} else if myType == "媒体" {
-				clue.ClueType = []string{"finance_comprehensive", "finance_media"}
-			} else if myType == "部委" {
-				clue.ClueType = []string{"finance_comprehensive", "finance_ministries"}
-			}
-			// 如果浮点数转化失败，f=0
-			f1, _ := strconv.ParseFloat(weight, 64)
-			clue.FinanceSourceCoefficient = f1
-			_, ok := clueConfig[sourceKey]
-			if ok {
-				fmt.Println(sourceKey)
-			}
 
-			clueConfig[sourceKey] = clue
-		} else {
-			fmt.Printf("row mid:%s\n", strings.Join(row, ","))
+		mid := row[0]
+		mid = strings.TrimSuffix(mid, ".0")
+		monitorType := row[1]
+		name := row[2]
+		myType := row[3]
+		weight := row[4]
+		source := row[5]
+		sourceKey := fmt.Sprintf("%s:%s:%s", monitorType, source, mid)
+		clue := ClueAggregation{Name: name}
+		if myType == "" {
+			clue.ClueType = []string{"finance_comprehensive"}
+		} else if myType == "媒体" {
+			clue.ClueType = []string{"finance_comprehensive", "finance_media"}
+		} else if myType == "部委" {
+			clue.ClueType = []string{"finance_comprehensive", "finance_ministries"}
 		}
+		// 如果浮点数转化失败，f=0
+		f1, _ := strconv.ParseFloat(weight, 64)
+		clue.FinanceSourceCoefficient = f1
+		_, ok := clueConfig[sourceKey]
+		if ok {
+			fmt.Println(sourceKey)
+		}
+
+		if source == "weixin" && monitorType != "account" {
+			fmt.Printf("row11111 mid:%s\n", strings.Join(row, ","))
+		}
+
+		if strings.Contains(source, "wei") && source != "weixin" {
+			fmt.Printf("row11111 mid:%s\n", strings.Join(row, ","))
+		}
+		clueConfig[sourceKey] = clue
 	}
 
 	bytes, _ := json.Marshal(clueConfig)
