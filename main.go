@@ -2,20 +2,90 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/xuri/excelize/v2"
+	"golang.org/x/time/rate"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/xuri/excelize/v2"
+	"go.uber.org/ratelimit"
 )
 
 // main
 func main() {
-	makePutBulk()
+	//makePutBulk()
+	//id2Exist := new(sync.Map)
+	//
+	//go func() {
+	//	_, exist := id2Exist.LoadOrStore("1", true)
+	//	fmt.Printf("1====%v\n", exist)
+	//}()
+	//
+	//go func() {
+	//	_, exist := id2Exist.LoadOrStore("1", true)
+	//	fmt.Printf("2====%v\n", exist)
+	//}()
+	//
+	//time.Sleep(time.Second * 2)
 
+	//limit := rate.Every(time.Minute)
+	//limiter := rate.NewLimiter(limit, 100)
+	//
+	//for i := 0; i < 100; i++ {
+	//	if err := limiter.Wait(context.Background()); err == nil {
+	//		fmt.Println(time.Now().Unix())
+	//	}
+	//	time.Sleep(time.Millisecond * time.Duration(rand.Int31n(100)))
+	//}
+	//now := time.Now().UnixNano()
+	//fmt.Println(now)
+	//now64 := float64(now)
+	//fmt.Println(now64)
+
+	rl := ratelimit.New(100, ratelimit.Per(time.Minute))
+	prev := time.Now()
+	for i := 0; i < 100; i++ {
+		now := rl.Take()
+		fmt.Println(i, now.Sub(prev))
+		prev = now
+	}
+	println("=================")
+
+	limit := rate.Every(time.Minute)
+	r := rate.NewLimiter(limit, 100)
+	prev = time.Now()
+	for i := 0; i < 100; i++ {
+		now := time.Now()
+		if err := r.Wait(context.Background()); err == nil {
+			fmt.Println(i, now.Sub(prev))
+			prev = now
+		}
+
+	}
+}
+
+type TNewsDynamicResp struct {
+	Status int32  `json:"status"`
+	Msg    string `json:"msg"`
+	Data   []struct {
+		EntityID   string `json:"entity_id"`   // 实体ID
+		EntityType string `json:"entity_type"` // 传入的实体类型
+		EntityData struct {
+			CTR                     string `json:"clk_ctr_2"`
+			DeepImgtextDetailTimePV string `json:"deep_imgtext_detail_time_pv"` // 深度消费PV
+			DeepVideoTimeVV         string `json:"deep_video_time_vv"`          // 深度消费VV
+			Exp                     string `json:"exp_pv_2"`                    // 站内累计曝光量
+			Clk                     string `json:"clk_pv_2"`                    // 站内累计点击量
+			Play                    string `json:"play_vv_2"`                   // 站内累计播放量
+			Share                   string `json:"share_2"`                     // 站内累计分享量
+			Comment                 string `json:"comment_2"`                   // 站内累计评论量
+		} `json:"entity_data"`
+	}
 }
 
 func makePutBulk() {
