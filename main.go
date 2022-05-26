@@ -5,48 +5,34 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/time/rate"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/xuri/excelize/v2"
 	"go.uber.org/ratelimit"
+	"golang.org/x/time/rate"
 )
 
 // main
 func main() {
-	//makePutBulk()
-	//id2Exist := new(sync.Map)
-	//
-	//go func() {
-	//	_, exist := id2Exist.LoadOrStore("1", true)
-	//	fmt.Printf("1====%v\n", exist)
-	//}()
-	//
-	//go func() {
-	//	_, exist := id2Exist.LoadOrStore("1", true)
-	//	fmt.Printf("2====%v\n", exist)
-	//}()
-	//
-	//time.Sleep(time.Second * 2)
-
-	//limit := rate.Every(time.Minute)
-	//limiter := rate.NewLimiter(limit, 100)
-	//
-	//for i := 0; i < 100; i++ {
-	//	if err := limiter.Wait(context.Background()); err == nil {
-	//		fmt.Println(time.Now().Unix())
-	//	}
-	//	time.Sleep(time.Millisecond * time.Duration(rand.Int31n(100)))
+	// 取变量a的反射类型对象
+	typeOfA := reflect.TypeOf([]*Sub{})
+	// 根据反射类型对象创建类型实例
+	article := reflect.New(typeOfA).Interface()
+	//err := json.Unmarshal([]byte("[{\"raw_id\":\"xxx\"}]"), article)
+	//if err != nil {
+	//	fmt.Println(err)
 	//}
-	//now := time.Now().UnixNano()
-	//fmt.Println(now)
-	//now64 := float64(now)
-	//fmt.Println(now64)
 
+	// arrayValue.Interface()
+	fmt.Println(reflect.ValueOf(article).Elem())
+}
+
+func rateLimit() {
 	rl := ratelimit.New(100, ratelimit.Per(time.Minute))
 	prev := time.Now()
 	for i := 0; i < 100; i++ {
