@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,11 +13,21 @@ import (
 
 	"github.com/xuri/excelize/v2"
 	"go.uber.org/ratelimit"
-	"golang.org/x/time/rate"
 )
 
 // main
 func main() {
+	a := []int{1, 2, 3}
+	b := make([]int, 2)
+	copy(b, a)
+	fmt.Println(b)
+}
+
+type Temp struct {
+	PopularClusterId string `json:"popular_cluster_id,omitempty"`
+}
+
+func testReflect() {
 	// 取变量a的反射类型对象
 	typeOfA := reflect.TypeOf([]*Sub{})
 	// 根据反射类型对象创建类型实例
@@ -31,7 +40,6 @@ func main() {
 	// arrayValue.Interface()
 	fmt.Println(reflect.ValueOf(article).Elem())
 }
-
 func rateLimit() {
 	rl := ratelimit.New(100, ratelimit.Per(time.Minute))
 	prev := time.Now()
@@ -42,17 +50,17 @@ func rateLimit() {
 	}
 	println("=================")
 
-	limit := rate.Every(time.Minute)
-	r := rate.NewLimiter(limit, 100)
-	prev = time.Now()
-	for i := 0; i < 100; i++ {
-		now := time.Now()
-		if err := r.Wait(context.Background()); err == nil {
-			fmt.Println(i, now.Sub(prev))
-			prev = now
-		}
-
-	}
+	//limit := rate.Every(time.Minute)
+	//r := rate.NewLimiter(limit, 100)
+	//prev = time.Now()
+	//for i := 0; i < 100; i++ {
+	//	now := time.Now()
+	//	if err := r.Wait(context.Background()); err == nil {
+	//		fmt.Println(i, now.Sub(prev))
+	//		prev = now
+	//	}
+	//
+	//}
 }
 
 type TNewsDynamicResp struct {
